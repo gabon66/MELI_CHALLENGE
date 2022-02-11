@@ -1,5 +1,5 @@
 package spaceModels
 
 type Satellites struct {
-	satellites []Satellite `json:satellites`
+	Satellites []Satellite `json:"satellites"`
 }

@@ -1,30 +1,52 @@
 package main
 
 import (
+	"CHALLENGE_MELI/helpers"
 	"CHALLENGE_MELI/spaceModels"
-	"encoding/json"
+
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
-
-	"github.com/gorilla/mux"
 )
+
+type jsonData struct {
+	satellites []spaceModels.Satellites
+}
+
+type sate struct {
+	Name string `json:"name"`
+}
+
+type ReqTopSecretPayLoad struct {
+	Name       string `json:"name"`
+	Age        int    `json:"age"`
+	Satellites []sate `json:"satellites"`
+}
 
 func topsecret(w http.ResponseWriter, r *http.Request) {
 
-	satelitesRequest := []spaceModels.Satellites{}
+	//var jsonData jsonData
+	var jsonDatatest spaceModels.Satellites
 
-	reqBody := json.NewDecoder(r.Body)
-
-	err := reqBody.Decode(&satelitesRequest)
-
+	err := helpers.DecodeJSONBody(w, r, &jsonDatatest)
 	if err != nil {
-		panic(err)
+		erroRequest(err, w)
+		return
 	}
 
-	fmt.Println(satelitesRequest)
+	fmt.Println("data", jsonDatatest.Satellites[0].Message[0])
 
-	json.NewEncoder(w).Encode(satelitesRequest)
+}
+
+func erroRequest(err error, w http.ResponseWriter) {
+	var mr *helpers.MalformedRequest
+	if errors.As(err, &mr) {
+		http.Error(w, mr.Msg, mr.Status)
+	} else {
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
@@ -33,8 +55,11 @@ func index(w http.ResponseWriter, r *http.Request) {
 
 // INICIO API REST
 func main() {
-	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/", index)
-	router.HandleFunc("/topsecret", topsecret)
-	log.Fatal(http.ListenAndServe(":3000", router))
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/topsecret", topsecret)
+
+	log.Println("Starting server on :4000...")
+	err := http.ListenAndServe(":4000", mux)
+	log.Fatal(err)
 }

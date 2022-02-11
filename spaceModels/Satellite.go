@@ -1,7 +1,7 @@
 package spaceModels
 
 type Satellite struct {
-	name     string   `json:name`
-	message  []string `json:message`
-	distance float64  `json:distance`
+	Name     string   `json:"name"`
+	Message  []string `json:"message"`
+	Distance float64  `json:"distance"`
 }
