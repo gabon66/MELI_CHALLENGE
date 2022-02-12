@@ -3,49 +3,52 @@ package main
 import (
 	"CHALLENGE_MELI/helpers"
 	"CHALLENGE_MELI/spaceModels"
-
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
-type jsonData struct {
-	satellites []spaceModels.Satellites
-}
-
-type sate struct {
-	Name string `json:"name"`
-}
-
-type ReqTopSecretPayLoad struct {
-	Name       string `json:"name"`
-	Age        int    `json:"age"`
-	Satellites []sate `json:"satellites"`
-}
-
+/*
+* POST request
+ */
 func topsecret(w http.ResponseWriter, r *http.Request) {
-
-	//var jsonData jsonData
 	var jsonDatatest spaceModels.Satellites
 
 	err := helpers.DecodeJSONBody(w, r, &jsonDatatest)
 	if err != nil {
-		erroRequest(err, w)
+		helpers.ErroRequest(err, w)
 		return
 	}
 
-	fmt.Println("data", jsonDatatest.Satellites[0].Message[0])
+	if len(jsonDatatest.Satellites) >= 3 {
 
-}
+		var distances []float32
+		var messages []string
 
-func erroRequest(err error, w http.ResponseWriter) {
-	var mr *helpers.MalformedRequest
-	if errors.As(err, &mr) {
-		http.Error(w, mr.Msg, mr.Status)
+		for index := range jsonDatatest.Satellites {
+			distances = append(distances, jsonDatatest.Satellites[index].Distance)
+			messages = append(messages, jsonDatatest.Satellites[index].Message...)
+		}
+
+		//s1_distance := jsonDatatest.Satellites[0].Distance
+		//s2_distance := jsonDatatest.Satellites[1].Distance
+		//s3_distance := jsonDatatest.Satellites[2].Distance
+
+		cordsx, cordsy := helpers.GetLocation(distances...)
+		msg := helpers.GetMessage(messages)
+
+		if cordsx == 0 && cordsy == 0 {
+			// validar que pasa si efectivamente la nave esta en estas coordenadas.
+			http.Error(w, "No se puede obtener posicion", 404)
+			return
+		}
+
+		helpers.ResponseJson(w, helpers.CreateResponseTopSecret(msg, cordsx, cordsy))
+
 	} else {
-		log.Println(err.Error())
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		http.Error(w, "Satetelites insuficientes para triangular", 404)
 	}
 }
 
@@ -56,10 +59,9 @@ func index(w http.ResponseWriter, r *http.Request) {
 // INICIO API REST
 func main() {
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/topsecret", topsecret)
+	router := mux.NewRouter().StrictSlash(true)
 
-	log.Println("Starting server on :4000...")
-	err := http.ListenAndServe(":4000", mux)
-	log.Fatal(err)
+	router.HandleFunc("/topsecret", topsecret).Methods("POST")
+
+	log.Fatal(http.ListenAndServe(":4000", router))
 }

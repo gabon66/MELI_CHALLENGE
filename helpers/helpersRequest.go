@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 
@@ -14,6 +15,24 @@ import (
 type MalformedRequest struct {
 	Status int
 	Msg    string
+}
+
+type ReponsePositionFormat struct {
+	X float32 `json:"x"`
+	Y float32 `json:"y"`
+}
+
+type ReponseTopsecretFormat struct {
+	Message  string                `json:"message"`
+	Position ReponsePositionFormat `json:"position"`
+}
+
+func CreateResponseTopSecret(message string, x float32, y float32) ReponseTopsecretFormat {
+	var responseFormated ReponseTopsecretFormat
+	responseFormated.Message = message
+	responseFormated.Position.X = x
+	responseFormated.Position.Y = y
+	return responseFormated
 }
 
 func (mr *MalformedRequest) Error() string {
@@ -76,4 +95,20 @@ func DecodeJSONBody(w http.ResponseWriter, r *http.Request, dst interface{}) err
 	}
 
 	return nil
+}
+
+func ResponseJson(w http.ResponseWriter, data interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(data)
+}
+
+func ErroRequest(err error, w http.ResponseWriter) {
+	var mr *MalformedRequest
+	if errors.As(err, &mr) {
+		http.Error(w, mr.Msg, mr.Status)
+	} else {
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
 }
