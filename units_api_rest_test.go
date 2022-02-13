@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -121,8 +120,6 @@ func TestTopSecretFailMessage(t *testing.T) {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rr.Body.String(), expected)
 	}
-
-	fmt.Println(rr.Body.String())
 }
 
 func TestTopSecretFailCoords(t *testing.T) {
