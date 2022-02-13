@@ -50,7 +50,7 @@ func processTopSecret(w http.ResponseWriter, jsonData spaceModels.Satellites) {
 }
 
 /*
-* POST request
+* POST - procesa array de satelites  para validar posicion y mensaje.
  */
 func TopSecret(w http.ResponseWriter, r *http.Request) {
 	var jsonData spaceModels.Satellites
@@ -69,7 +69,7 @@ func TopSecret(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-* GET request
+* GET - valida en base a los datos de cache si puede sacar posicion y mensaje
  */
 func TopSecret_Split_Check(w http.ResponseWriter, r *http.Request) {
 	// si entra por aca es para validar
@@ -94,7 +94,7 @@ func TopSecret_Split_Check(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-* POST
+* POST - Guarda en cache datos por cada satelite
  */
 func TopSecret_Split_Save(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -113,21 +113,20 @@ func TopSecret_Split_Save(w http.ResponseWriter, r *http.Request) {
 		helpers.SaveAndGetDataBySatelliteName(cache, satellite_name, jsonData)
 
 	} else {
+		fmt.Println(satellite_name)
 		http.Error(w, "Nombre de satelite no provisto", 404)
 	}
 }
 
 // INICIO API REST
 func main() {
-
-	//fmt.Println(helpers.GetDistance(5, 5, 5, -2))
-
 	router := mux.NewRouter().StrictSlash(true)
-
+	fmt.Println("Listening on port :4000")
 	router.HandleFunc("/", index).Methods("GET")
 	router.HandleFunc("/topsecret", TopSecret).Methods("POST")
 	router.HandleFunc("/topsecret_split", TopSecret_Split_Check).Methods("GET")                  // si es get es para validar coords y mensaje
 	router.HandleFunc("/topsecret_split/{satellite_name}", TopSecret_Split_Save).Methods("POST") // dejo solo post para enviar data
 
 	log.Fatal(http.ListenAndServe(":4000", router))
+
 }

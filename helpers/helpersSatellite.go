@@ -74,11 +74,6 @@ func GetMessage(messages ...[]string) (msg string) {
 	return strings.TrimSpace(finalMessageStr)
 }
 
-// Crea un objeto circular
-func NewCircle(x, y, r float64) *geometryModels.Circle {
-	return &geometryModels.Circle{geometryModels.Coord{x, y}, r}
-}
-
 // Encuentra la intersección de dos círculos, el número de intersecciones puede ser 0,1,2
 func Intersect(x1 float64, y1 float64, r1 float64, x2 float64, y2 float64, r2 float64) ([]geometryModels.Coord, bool) {
 	var centerdx = x1 - x2
@@ -87,9 +82,8 @@ func Intersect(x1 float64, y1 float64, r1 float64, x2 float64, y2 float64, r2 fl
 
 	var points []geometryModels.Coord
 	if !(math.Abs(r1-r2) <= R && R <= r1+r2) { // no intersection
-		return points, false // empty list of results
+		return points, false
 	}
-	// intersection(s) should exist
 
 	var R2 = R * R
 	var R4 = R2 * R2
@@ -106,10 +100,6 @@ func Intersect(x1 float64, y1 float64, r1 float64, x2 float64, y2 float64, r2 fl
 	var gy = c * (x1 - x2) / 2
 	var iy1 = fy + gy
 	var iy2 = fy - gy
-
-	// note if gy == 0 and gx == 0 then the circles are tangent and there is only one solution
-	// but that one solution will just be duplicated as the code is currently written
-	//return [[ix1, iy1], [ix2, iy2]];
 
 	points = append(points, geometryModels.Coord{ix1, iy1})
 	points = append(points, geometryModels.Coord{ix2, iy2})

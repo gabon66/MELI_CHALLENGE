@@ -4,18 +4,18 @@
                     "name": "kenobi",
                     "distance": 100.0,
                     "message": ["este", "", "", "mensaje", ""],
-                    "coords":[-5,-5]
+                    "coords":[-500,-200]
                 },
                 {
                     "name": "skywalker",
                     "distance": 115.5,
-                    "message": ["este", "", "", "mensaje", ""],
-                    "coords":[-5,5]
+                    "message": ["","es", "", "mensaje", ""],
+                    "coords":[100,-100]
                 },    {
                     "name": "sato",
                     "distance": 142.7,
-                    "message": ["este", "", "", "mensaje", ""],
-                    "coords":[5,5]
+                    "message": ["", "", "un", "mensaje", "aux"],
+                    "coords":[500,100]
                 }
             ]
 }
