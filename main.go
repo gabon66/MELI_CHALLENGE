@@ -11,16 +11,18 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// inicio cache
 var cache ttlcache.SimpleCache = ttlcache.NewCache()
 
 /*
 * GET request
  */
-
 func index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Meli Challenge")
+	fmt.Fprintf(w, "Meli Challenge -  Operacion ​ Fuego de Quasar")
 }
 
+// Valida en base a array de satelites coordenadas y mensaje de nave
+// en caso de no poder calcular coordenadas o recuperar mensaje devuelve error.
 func processTopSecret(w http.ResponseWriter, jsonData spaceModels.Satellites) {
 	var distances []float32
 	var messages [][]string
@@ -50,7 +52,7 @@ func processTopSecret(w http.ResponseWriter, jsonData spaceModels.Satellites) {
 /*
 * POST request
  */
-func topsecret(w http.ResponseWriter, r *http.Request) {
+func TopSecret(w http.ResponseWriter, r *http.Request) {
 	var jsonData spaceModels.Satellites
 
 	err := helpers.DecodeJSONBody(w, r, &jsonData)
@@ -60,18 +62,41 @@ func topsecret(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(jsonData.Satellites) >= 3 {
-
 		processTopSecret(w, jsonData)
-
 	} else {
-		http.Error(w, "Satetelites insuficientes para triangular", 404)
+		helpers.ErrorResponseNumberSatellites(w)
 	}
 }
 
 /*
-* POST - GET request
+* GET request
  */
-func topsecret_split(w http.ResponseWriter, r *http.Request) {
+func TopSecret_Split_Check(w http.ResponseWriter, r *http.Request) {
+	// si entra por aca es para validar
+	var satellites []spaceModels.Satellite
+	for i := 0; i < 3; i++ {
+		nameSat := helpers.GetNameFromFileByIndex(i)
+		currentSat, dataStored := helpers.GetDataBySatelliteName(cache, nameSat)
+
+		// valido si tengo distancia es que esta guardado
+		if dataStored {
+			satellites = append(satellites, currentSat)
+		}
+	}
+
+	if len(satellites) == 3 {
+		var allSat spaceModels.Satellites
+		allSat.Satellites = satellites
+		processTopSecret(w, allSat)
+	} else {
+		helpers.ErrorResponseNumberSatellites(w)
+	}
+}
+
+/*
+* POST
+ */
+func TopSecret_Split_Save(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	satellite_name := vars["satellite_name"]
 
@@ -88,38 +113,21 @@ func topsecret_split(w http.ResponseWriter, r *http.Request) {
 		helpers.SaveAndGetDataBySatelliteName(cache, satellite_name, jsonData)
 
 	} else {
-		// si entra por aca es para validar
-		var satellites []spaceModels.Satellite
-		for i := 0; i < 3; i++ {
-			nameSat := helpers.GetNameFromFileByIndex(i)
-			currentSat, dataStored := helpers.GetDataBySatelliteName(cache, nameSat)
-
-			// valido si tengo distancia es que esta guardado
-			if dataStored {
-				satellites = append(satellites, currentSat)
-			}
-		}
-
-		if len(satellites) == 3 {
-			var allSat spaceModels.Satellites
-			allSat.Satellites = satellites
-			processTopSecret(w, allSat)
-		} else {
-			http.Error(w, "Satetelites insuficientes para triangular", 404)
-		}
+		http.Error(w, "Nombre de satelite no provisto", 404)
 	}
-
 }
 
 // INICIO API REST
 func main() {
+
+	//fmt.Println(helpers.GetDistance(5, 5, 5, -2))
+
 	router := mux.NewRouter().StrictSlash(true)
 
-	router.HandleFunc("/", topsecret).Methods("GET")
-
-	router.HandleFunc("/topsecret", topsecret).Methods("POST")
-	router.HandleFunc("/topsecret_split", topsecret_split).Methods("GET")                   // si es get es para validar coords y mensaje
-	router.HandleFunc("/topsecret_split/{satellite_name}", topsecret_split).Methods("POST") // dejo solo post para enviar data
+	router.HandleFunc("/", index).Methods("GET")
+	router.HandleFunc("/topsecret", TopSecret).Methods("POST")
+	router.HandleFunc("/topsecret_split", TopSecret_Split_Check).Methods("GET")                  // si es get es para validar coords y mensaje
+	router.HandleFunc("/topsecret_split/{satellite_name}", TopSecret_Split_Save).Methods("POST") // dejo solo post para enviar data
 
 	log.Fatal(http.ListenAndServe(":4000", router))
 }

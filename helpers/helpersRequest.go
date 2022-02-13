@@ -112,3 +112,7 @@ func ErroRequest(err error, w http.ResponseWriter) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }
+
+func ErrorResponseNumberSatellites(w http.ResponseWriter) {
+	http.Error(w, "Satetelites insuficientes para triangular", 404)
+}
