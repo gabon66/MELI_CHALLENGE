@@ -1,20 +1,19 @@
-# MELI_CHALLENGE
+# MELI_CHALLENGE : Operación Fuego de Quasar
 
-Instalacion: 
+## Instalación: 
 
-Para instalar las dependencias usadas correr el comando:
+#### Para instalar las dependencias correr el comando:
 
-go build 
+`go build `
 
-Una vez terminado para correr la api usar:
+#### Una vez terminado para correr la api usar:
 
-go run main.go
+`go run main.go`
 
-Tener en cuenta que la api esta configurada para escuchar en el puerto 4000
+#### Tener en cuenta que la api esta configurada para escuchar en el puerto 4000
 
-Para correr los unitarios es necesario que la api este corriendo y correr este comando:
+#### Para correr los unitarios es necesario que la api este corriendo y con este comando:
 
-go test -v
-
+`go test -v`
 
 
