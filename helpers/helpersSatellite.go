@@ -9,6 +9,10 @@ import (
 	"log"
 	"math"
 	"os"
+	"strings"
+
+	"github.com/ReneKroon/ttlcache/v2"
+	"github.com/mitchellh/mapstructure"
 )
 
 func GetLocation(distances ...float32) (x, y float32) {
@@ -39,7 +43,33 @@ func GetLocation(distances ...float32) (x, y float32) {
 
 func GetMessage(messages ...[]string) (msg string) {
 
-	return ""
+	//defino array de palabras en base a logitud de mensaje
+	finalMessage := make([]string, len(messages[0]))
+
+	var x int
+	for i := 0; i < len(messages); i++ {
+		messagesBySat := messages[i]
+		for x = 0; x < len(messagesBySat); x++ {
+			// si es una palabra valida la asigno a mi array en la posicion que corresponde
+			if len(strings.TrimSpace(messagesBySat[x])) > 0 {
+				finalMessage[x] = messagesBySat[x]
+			}
+		}
+		messagesBySat = nil
+		x = 0
+	}
+
+	//valido si me quedo algun lugar vacio
+	var finalMessageStr string
+	for i := 0; i < len(finalMessage); i++ {
+		if finalMessage[i] != "" {
+			finalMessageStr = finalMessageStr + finalMessage[i] + " "
+		} else {
+			return ""
+		}
+	}
+
+	return strings.TrimSpace(finalMessageStr)
 }
 
 // Crea un objeto circular
@@ -87,6 +117,11 @@ func getKnownPositionByIndex(index int) []float64 {
 	return loadFileLastKnowPostition().Satellites[index].Coords
 }
 
+//obtengo nombres de satelites en base a index de array
+func GetNameFromFileByIndex(index int) string {
+	return loadFileLastKnowPostition().Satellites[index].Name
+}
+
 //obtengo data de satelites pre cargada, esto se podria traer de una db  (con mas tiempo.. )
 func loadFileLastKnowPostition() spaceModels.Satellites {
 	jsonFile, err := os.Open("data/last_known_position.json")
@@ -98,4 +133,39 @@ func loadFileLastKnowPostition() spaceModels.Satellites {
 	json.Unmarshal([]byte(byteValue), &jsonDataFile)
 
 	return jsonDataFile
+}
+
+//Guardo y Obtengo cada data del satelite en base al nombre
+func SaveAndGetDataBySatelliteName(cache ttlcache.SimpleCache, satellite_name string, jsonData spaceModels.Satellite) spaceModels.Satellite {
+
+	dataCached, err := cache.Get(satellite_name)
+	if err != ttlcache.ErrNotFound {
+		log.Printf("data not found")
+	}
+	dataSatellite := spaceModels.Satellite{}
+	if dataCached == nil {
+		cache.Set(satellite_name, jsonData)
+	} else {
+		cache.Set(satellite_name, jsonData)
+		mapstructure.Decode(dataCached, &dataSatellite)
+	}
+	log.Printf("satellite %s updated", satellite_name)
+	return dataSatellite
+}
+
+//Obtengo cada data del satelite en base al nombre
+func GetDataBySatelliteName(cache ttlcache.SimpleCache, satellite_name string) (spaceModels.Satellite, bool) {
+
+	dataCached, err := cache.Get(satellite_name)
+	dataStored := false
+	if err != ttlcache.ErrNotFound {
+		log.Printf("data not found")
+	}
+	dataSatellite := spaceModels.Satellite{}
+	if dataCached != nil {
+		dataStored = true
+		mapstructure.Decode(dataCached, &dataSatellite)
+		fmt.Println(dataSatellite.Distance)
+	}
+	return dataSatellite, dataStored
 }
