@@ -16,4 +16,10 @@
 
 `go test -v`
 
+#### Documentacon API (faltan formato del json - in progress):
+
+`<swagger>` : <http://localhost:4000/swagger>
+
+
+
 
