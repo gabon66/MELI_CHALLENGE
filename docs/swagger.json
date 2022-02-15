@@ -1,0 +1,68 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "CHALLENGE: Operacíon Fuego de Quasar",
+        "title": "MELI CHALLENGE",
+        "contact": {
+            "name": "API Support",
+            "email": "gabriel.adrian.felipe@gmail.com"
+        },
+        "license": {
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:4000",
+    "basePath": "/",
+    "paths": {
+        "/topsecret": {
+            "post": {
+                "description": "Valida posicion de nave en base a array de satelites",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Valida posicion de nave",
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/topsecret_split": {
+            "get": {
+                "description": "Valida posicion de nave en base a cache",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Valida posicion de nave",
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            },
+            "post": {
+                "description": "Guarda en cache datos por cada satelite",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Guarda en cache datos por cada satelite",
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        }
+    }
+}

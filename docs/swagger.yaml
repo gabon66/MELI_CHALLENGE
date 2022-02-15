@@ -1,0 +1,45 @@
+basePath: /
+host: localhost:4000
+info:
+  contact:
+    email: gabriel.adrian.felipe@gmail.com
+    name: API Support
+  description: 'CHALLENGE: Operacíon Fuego de Quasar'
+  license:
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: MELI CHALLENGE
+  version: "1.0"
+paths:
+  /topsecret:
+    post:
+      consumes:
+      - application/json
+      description: Valida posicion de nave en base a array de satelites
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      summary: Valida posicion de nave
+  /topsecret_split:
+    get:
+      consumes:
+      - application/json
+      description: Valida posicion de nave en base a cache
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      summary: Valida posicion de nave
+    post:
+      consumes:
+      - application/json
+      description: Guarda en cache datos por cada satelite
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      summary: Guarda en cache datos por cada satelite
+swagger: "2.0"
