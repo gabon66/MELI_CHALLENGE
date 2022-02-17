@@ -16,7 +16,7 @@
 
 `go test -v`
 
-#### Documentación API (faltan formatos de request json (request y response) - in progress):
+#### Documentación API:
 
 `<swagger>` : <http://localhost:4000/swagger>
 
