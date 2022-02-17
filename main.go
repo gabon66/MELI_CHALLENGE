@@ -55,7 +55,8 @@ func processTopSecret(w http.ResponseWriter, jsonData spaceModels.Satellites) {
 // @Description Valida posicion de nave en base a array de satelites
 // @Accept  json
 // @Produce  json
-// @Success 200
+// @Param satelliteData body spaceModels.Satellites true "Save Satellite Data"
+// @Success 200 {object} helpers.ReponseTopsecretFormat
 // @Router /topsecret [post]
 func TopSecret(w http.ResponseWriter, r *http.Request) {
 	var jsonData spaceModels.Satellites
@@ -77,7 +78,7 @@ func TopSecret(w http.ResponseWriter, r *http.Request) {
 // @Description Valida posicion de nave en base a cache
 // @Accept  json
 // @Produce  json
-// @Success 200
+// @Success 200 {object} helpers.ReponseTopsecretFormat
 // @Router /topsecret_split [get]
 func TopSecret_Split_Check(w http.ResponseWriter, r *http.Request) {
 	// si entra por aca es para validar
@@ -105,6 +106,7 @@ func TopSecret_Split_Check(w http.ResponseWriter, r *http.Request) {
 // @Description Guarda en cache datos por cada satelite
 // @Accept  json
 // @Produce  json
+// @Param satelliteData body spaceModels.Satellite true "Save Satellite Data"
 // @Success 200
 // @Router /topsecret_split [post]
 func TopSecret_Split_Save(w http.ResponseWriter, r *http.Request) {

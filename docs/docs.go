@@ -32,9 +32,23 @@ const docTemplate_swagger = `{
                     "application/json"
                 ],
                 "summary": "Valida posicion de nave",
+                "parameters": [
+                    {
+                        "description": "Save Satellite Data",
+                        "name": "satelliteData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/spaceModels.Satellites"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ReponseTopsecretFormat"
+                        }
                     }
                 }
             }
@@ -51,7 +65,10 @@ const docTemplate_swagger = `{
                 "summary": "Valida posicion de nave",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.ReponseTopsecretFormat"
+                        }
                     }
                 }
             },
@@ -64,9 +81,78 @@ const docTemplate_swagger = `{
                     "application/json"
                 ],
                 "summary": "Guarda en cache datos por cada satelite",
+                "parameters": [
+                    {
+                        "description": "Save Satellite Data",
+                        "name": "satelliteData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/spaceModels.Satellite"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": ""
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "helpers.ReponsePositionFormat": {
+            "type": "object",
+            "properties": {
+                "x": {
+                    "type": "number"
+                },
+                "y": {
+                    "type": "number"
+                }
+            }
+        },
+        "helpers.ReponseTopsecretFormat": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "position": {
+                    "$ref": "#/definitions/helpers.ReponsePositionFormat"
+                }
+            }
+        },
+        "spaceModels.Satellite": {
+            "type": "object",
+            "properties": {
+                "coords": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "distance": {
+                    "type": "number"
+                },
+                "message": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "spaceModels.Satellites": {
+            "type": "object",
+            "properties": {
+                "satellites": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/spaceModels.Satellite"
                     }
                 }
             }

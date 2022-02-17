@@ -1,4 +1,41 @@
 basePath: /
+definitions:
+  helpers.ReponsePositionFormat:
+    properties:
+      x:
+        type: number
+      "y":
+        type: number
+    type: object
+  helpers.ReponseTopsecretFormat:
+    properties:
+      message:
+        type: string
+      position:
+        $ref: '#/definitions/helpers.ReponsePositionFormat'
+    type: object
+  spaceModels.Satellite:
+    properties:
+      coords:
+        items:
+          type: number
+        type: array
+      distance:
+        type: number
+      message:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+    type: object
+  spaceModels.Satellites:
+    properties:
+      satellites:
+        items:
+          $ref: '#/definitions/spaceModels.Satellite'
+        type: array
+    type: object
 host: localhost:4000
 info:
   contact:
@@ -15,11 +52,20 @@ paths:
       consumes:
       - application/json
       description: Valida posicion de nave en base a array de satelites
+      parameters:
+      - description: Save Satellite Data
+        in: body
+        name: satelliteData
+        required: true
+        schema:
+          $ref: '#/definitions/spaceModels.Satellites'
       produces:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
+          schema:
+            $ref: '#/definitions/helpers.ReponseTopsecretFormat'
       summary: Valida posicion de nave
   /topsecret_split:
     get:
@@ -30,12 +76,21 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
+          schema:
+            $ref: '#/definitions/helpers.ReponseTopsecretFormat'
       summary: Valida posicion de nave
     post:
       consumes:
       - application/json
       description: Guarda en cache datos por cada satelite
+      parameters:
+      - description: Save Satellite Data
+        in: body
+        name: satelliteData
+        required: true
+        schema:
+          $ref: '#/definitions/spaceModels.Satellite'
       produces:
       - application/json
       responses:
